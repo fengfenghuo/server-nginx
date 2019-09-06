@@ -1,0 +1,12 @@
+namespace: prod-sfox
+deployName: entry-sg
+serviceName: entry-sg
+
+image:
+  repository: registry.ap-southeast-1.aliyuncs.com/adups/entry
+  tag: prod
+
+env: prod-sg
+
+nodeSelector:
+  node-name: sg-prod-1

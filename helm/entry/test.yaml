@@ -1,0 +1,13 @@
+namespace: test-sfox
+replicaCount: 1
+deployName: entry
+serviceName: entry
+
+image:
+  repository: registry.ap-southeast-1.aliyuncs.com/adups/entry
+  tag: test
+
+env: test
+
+nodeSelector:
+  node-env: test

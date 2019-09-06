@@ -1,0 +1,12 @@
+namespace: prod-sfox
+deployName: entry-hk
+serviceName: entry-hk
+
+image:
+  repository: registry.ap-southeast-1.aliyuncs.com/adups/entry
+  tag: prod
+
+env: prod-hk
+
+nodeSelector:
+  node-name: hk-prod-1

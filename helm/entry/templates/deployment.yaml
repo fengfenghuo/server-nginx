@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: {{ .Values.deployName }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: entry
+  template:
+    metadata:
+      labels:
+        app: entry
+    spec:
+      nodeSelector:
+        {{- range $key, $value := .Values.nodeSelector }}
+        {{ $key }}: {{ $value }}
+        {{- end }}
+
+      volumes:
+        - name: host-time
+          hostPath:
+            path: /etc/localtime
+        - name: nginx-logs
+          hostPath:
+            path: /data/nginx_logs
+
+      containers:
+        - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          name: entry
+          imagePullPolicy: IfNotPresent
+          {{- if eq .Values.env "prod-hk" }}
+          args: ["nginx", "-g", "daemon off;", "-c", "/etc/nginx/confs/nginx-hk.conf"]
+          {{- else if eq .Values.env "prod-sg" }}
+          args: ["nginx", "-g", "daemon off;", "-c", "/etc/nginx/confs/nginx-sg.conf"]
+          {{- else if eq .Values.env "prod-us" }}
+          args: ["nginx", "-g", "daemon off;", "-c", "/etc/nginx/confs/nginx-us.conf"]
+          {{- end }}
+          ports:
+            - containerPort: 80
+              hostPort: 80
+            - containerPort: 443
+              hostPort: 443
+          volumeMounts:
+            - name: host-time
+              mountPath: /etc/localtime
+            - name: nginx-logs
+              mountPath: /etc/nginx/logs
+
+      imagePullSecrets:
+        - name: aliyun-singapore-registry
+  strategy:
+    type: Recreate
